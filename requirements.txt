@@ -1,0 +1,10 @@
+streamlit
+python-dotenv
+langchain-google-genai
+langchain-community
+langchain-core
+sqlalchemy
+psycopg2-binary
+pandas
+joblib
+scikit-learn
