@@ -2,10 +2,14 @@ import os
 import joblib
 import pandas as pd
 from urllib.parse import quote_plus
+from dotenv import load_dotenv
 from langchain_community.utilities import SQLDatabase
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.agent_toolkits import create_sql_agent
 from langchain_core.tools import tool
+
+# Load environment variables early so they are available globally
+load_dotenv()
 
 # Load the trained Machine Learning model
 try:
@@ -74,7 +78,11 @@ def send_bulk_alert_emails(num_vehicles: int, alert_reason: str) -> str:
 def setup_database_connection():
     # 1. Database Connection Configuration (matching load_data.py)
     db_user = 'postgres'
-    db_password = 'Veda@1512'
+    db_password = os.environ.get('DB_PASSWORD')
+    if not db_password:
+        print("Error: DB_PASSWORD environment variable is missing. Please add it to your .env file.")
+        return None
+        
     encoded_password = quote_plus(db_password)
     db_host = 'localhost'
     db_port = '5432'
@@ -97,9 +105,6 @@ if __name__ == "__main__":
     if db:
         print("\nInitializing Veda AI Agent...")
         
-        # NOTE: Put your PAID Google Gemini API key here!
-        os.environ["GOOGLE_API_KEY"] = "AIzaSyCnbGUNv7jjHHBTSp_B_hTD7DdTNG58jDs"
-
         # Using 2.5 Flash without pacing since you are on the paid tier!
         llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0, max_retries=5)
         

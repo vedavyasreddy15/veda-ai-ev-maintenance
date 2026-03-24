@@ -1,11 +1,19 @@
 import pandas as pd
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
+import os
+from dotenv import load_dotenv
 
 def load_csv_to_postgres():
+    # Load environment variables from .env file
+    load_dotenv()
+
     # 1. Database Connection Configuration
     # Replace 'YOUR_PASSWORD' with your actual pgAdmin password
-    db_password = 'Veda@1512' 
+    db_password = os.environ.get('DB_PASSWORD')
+    if not db_password:
+        raise ValueError("DB_PASSWORD environment variable is missing. Please add it to your .env file.")
+        
     encoded_password = quote_plus(db_password)
     
     # Create the connection engine

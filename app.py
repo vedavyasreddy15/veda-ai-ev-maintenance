@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.agent_toolkits import create_sql_agent
 
@@ -9,8 +10,8 @@ from agent import setup_database_connection, predict_failure_probability, send_a
 # --- Setup the Agent ---
 @st.cache_resource # This keeps the agent loaded so it doesn't reconnect every time you type
 def initialize_agent():
-    # NOTE: Put your paid API key here!
-    os.environ["GOOGLE_API_KEY"] = "AIzaSyCnbGUNv7jjHHBTSp_B_hTD7DdTNG58jDs" 
+    # Load environment variables (like GOOGLE_API_KEY) from .env file
+    load_dotenv()
     
     db = setup_database_connection()
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0, max_retries=5)
