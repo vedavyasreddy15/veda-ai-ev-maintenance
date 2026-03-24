@@ -1,5 +1,6 @@
 import os
 import joblib
+import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 from langchain_community.utilities import SQLDatabase
@@ -23,9 +24,32 @@ def predict_failure_probability(battery_temperature: float, battery_voltage: flo
     Predicts the EV battery failure probability using a Machine Learning model.
     Input requires exact numeric values for: battery_temperature, battery_voltage, motor_temperature, motor_rpm, soc, and soh.
     """
+    # --- 0. Model Availability Check ---
+    if ml_model is None:
+        return "System Error: Predictive ML model (rf_model.pkl) is missing or failed to load. Cannot predict failure."
+
+    # --- 1. Domain-Specific Sanity Checks (Outlier Rejection) ---
+    # Reject physically impossible values before they ever reach the ML model
+    if not (-50 <= battery_temperature <= 150):
+        return f"Validation Error: battery_temperature ({battery_temperature}) is physically impossible. Must be -50 to 150."
+    if not (-50 <= motor_temperature <= 250):
+        return f"Validation Error: motor_temperature ({motor_temperature}) is physically impossible. Must be -50 to 250."
+    if motor_rpm < 0 or motor_rpm > 30000:
+        return f"Validation Error: motor_rpm ({motor_rpm}) is physically impossible. Must be 0 to 30000."
+    if not (0 <= soc <= 100) or not (0 <= soh <= 100):
+        return f"Validation Error: soc ({soc}) and soh ({soh}) must be percentages between 0 and 100."
+
     input_data = pd.DataFrame([[battery_temperature, battery_voltage, motor_temperature, motor_rpm, soc, soh]], 
                               columns=['battery_temperature', 'battery_voltage', 'motor_temperature', 'motor_rpm', 'soc', 'soh'])
     
+    # --- Data Preprocessing & Sanitization ---
+    # 2. Handle infinite values (e.g., if a sensor divided by zero in the database)
+    input_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+    
+    # 3. Impute missing values (NaN) caused by sensor dropouts
+    if input_data.isnull().values.any():
+        input_data.fillna(0, inplace=True) # In production, use the fleet median or mean here
+
     # Get the exact probability of failure (class 1 is the second element)
     failure_prob = ml_model.predict_proba(input_data)[0][1]
     
