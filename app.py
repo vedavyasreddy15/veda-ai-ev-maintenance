@@ -66,6 +66,9 @@ with st.sidebar:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Keep track of how many messages we show
+MAX_HISTORY_MESSAGES = 6 
+
 # Display past chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -82,7 +85,18 @@ if prompt := st.chat_input("E.g., What is the average motor temp? Is the vehicle
     with st.chat_message("assistant"):
         with st.spinner("Analyzing telemetry and predicting health..."):
             try:
-                response = agent.invoke({"input": prompt})
+                # --- Inject Chat History for Context ---
+                history_str = ""
+                # Grab recent messages (excluding the one the user just typed)
+                recent_messages = st.session_state.messages[-MAX_HISTORY_MESSAGES:-1]
+                for msg in recent_messages:
+                    role_name = "User" if msg["role"] == "user" else "Veda AI"
+                    history_str += f"{role_name}: {msg['content']}\n"
+                
+                # Secretly bundle the history with the user's prompt so the AI remembers!
+                contextual_prompt = f"Recent Chat History:\n{history_str}\n\nNew Request: {prompt}" if history_str else prompt
+
+                response = agent.invoke({"input": contextual_prompt})
                 
                 # Clean up Gemini's raw output format
                 raw_output = response['output']
