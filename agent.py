@@ -1,7 +1,6 @@
 import os
 import joblib
 import pandas as pd
-from urllib.parse import quote_plus
 from dotenv import load_dotenv
 from langchain_community.utilities import SQLDatabase
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -76,21 +75,12 @@ def send_bulk_alert_emails(num_vehicles: int, alert_reason: str) -> str:
     return f"Bulk alert emails successfully sent to {num_vehicles} customers."
 
 def setup_database_connection():
-    # 1. Database Connection Configuration (matching load_data.py)
-    db_user = 'postgres'
-    db_password = os.environ.get('DB_PASSWORD')
-    if not db_password:
-        print("Error: DB_PASSWORD environment variable is missing. Please add it to your .env file.")
+    # 1. Database Connection Configuration
+    db_uri = os.environ.get('DATABASE_URL')
+    if not db_uri:
+        print("Error: DATABASE_URL environment variable is missing. Please add it to your .env file.")
         return None
         
-    encoded_password = quote_plus(db_password)
-    db_host = 'localhost'
-    db_port = '5432'
-    db_name = 'postgres'
-    
-    # Connection string for SQLAlchemy/LangChain
-    db_uri = f"postgresql+psycopg2://{db_user}:{encoded_password}@{db_host}:{db_port}/{db_name}"
-    
     try:
         # Initialize the LangChain SQLDatabase wrapper
         db = SQLDatabase.from_uri(db_uri)

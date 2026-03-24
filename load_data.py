@@ -1,6 +1,5 @@
 import pandas as pd
 from sqlalchemy import create_engine
-from urllib.parse import quote_plus
 import os
 from dotenv import load_dotenv
 
@@ -9,15 +8,12 @@ def load_csv_to_postgres():
     load_dotenv()
 
     # 1. Database Connection Configuration
-    # Replace 'YOUR_PASSWORD' with your actual pgAdmin password
-    db_password = os.environ.get('DB_PASSWORD')
-    if not db_password:
-        raise ValueError("DB_PASSWORD environment variable is missing. Please add it to your .env file.")
-        
-    encoded_password = quote_plus(db_password)
-    
+    db_uri = os.environ.get('DATABASE_URL')
+    if not db_uri:
+        raise ValueError("DATABASE_URL environment variable is missing. Please add it to your .env file.")
+
     # Create the connection engine
-    engine = create_engine(f'postgresql://postgres:{encoded_password}@localhost:5432/postgres')
+    engine = create_engine(db_uri)
 
     # 2. Load the data using your exact Windows file path
     # The 'r' before the string tells Python to read the backslashes literally

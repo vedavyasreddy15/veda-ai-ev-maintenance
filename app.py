@@ -14,7 +14,21 @@ def initialize_agent():
     load_dotenv()
     
     db = setup_database_connection()
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0, max_retries=5)
+    
+    # Stop the app gracefully if the database fails to connect
+    if db is None:
+        st.error("❌ Failed to connect to the PostgreSQL database.")
+        st.info("Ensure your database is running and `DB_PASSWORD` is set in your environment variables or Streamlit Secrets.")
+        st.stop()
+        
+    # Safely fetch the API key and handle missing keys gracefully
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        st.error("❌ Google API Key is missing.")
+        st.info("Please add `GOOGLE_API_KEY` to your Streamlit Secrets in the deployment dashboard.")
+        st.stop()
+        
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0, max_retries=5, google_api_key=api_key)
     
     # Create a strict identity for Veda AI so it handles out-of-domain questions gracefully
     custom_prefix = """You are Veda AI, an elite EV Predictive Maintenance Assistant.
