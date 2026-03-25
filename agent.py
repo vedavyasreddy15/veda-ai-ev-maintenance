@@ -107,7 +107,7 @@ def setup_database_connection():
         
     try:
         # Initialize the LangChain SQLDatabase wrapper
-        db = SQLDatabase.from_uri(db_uri)
+        db = SQLDatabase.from_uri(db_uri, engine_args={"pool_pre_ping": True})
         print(f"Successfully connected! Available tables for the AI: {db.get_usable_table_names()}")
         return db
     except Exception as e:

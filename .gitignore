@@ -3,3 +3,6 @@
 
 # Python cache
 __pycache__/
+
+# Ignore large datasets (Data lives in PostgreSQL online!)
+*.csv
