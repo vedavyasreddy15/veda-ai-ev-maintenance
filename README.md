@@ -34,5 +34,3 @@ This system bridges the gap between unstructured LLM reasoning and structured en
 - [x] PostgreSQL database initialized and `vehicle_telemetry` table populated.
 - [ ] Next Step: Initialize LangChain, connect to the PostgreSQL database, and build the Text-to-SQL tool.
 
-## Note for AI Assistants
-When assisting with this codebase, prioritize industry-standard, production-ready code. Ensure all SQL queries are parameterized or safely generated, and wrap external tool calls in `try/except` blocks to allow the ReAct loop to recover from errors gracefully.
