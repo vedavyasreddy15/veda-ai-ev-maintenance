@@ -1,7 +1,10 @@
 # Veda AI: Predictive Maintenance Agent
+
 **link=https://veda-ai-evmaintaince.streamlit.app/**
+
+
 **Author:** Vedavyas Reddy Bommineni
-**Context:** M.S. Data Science Portfolio Project
+
 
 ## Project Overview
 Veda AI is an advanced "Agentic RAG" system designed for the electric vehicle industry (specifically modeled for Lucid Motors). Instead of a standard chatbot, Veda AI acts as an autonomous engineering assistant. It uses a ReAct (Reason + Act) logic loop to translate natural language into SQL, query live vehicle telemetry, run predictive machine learning models, and output vehicle health assessments.
