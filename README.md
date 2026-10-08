@@ -35,5 +35,4 @@ This system bridges the gap between unstructured LLM reasoning and structured en
 - [x] Environment setup and dependency installation.
 - [x] Data Ingestion Pipeline (`load_data.py`) written.
 - [x] PostgreSQL database initialized and `vehicle_telemetry` table populated.
-- [ ] Next Step: Initialize LangChain, connect to the PostgreSQL database, and build the Text-to-SQL tool.
-
+- [x] Initialized LangChain, connected to the PostgreSQL database, and built the Text-to-SQL tool.
